@@ -3,11 +3,16 @@ import numpy as np
 import pandas as pd
 from comtrade import Comtrade
 
-test_directory = 'test_data'
+filepath = os.path.abspath("..\..\data")
+
+
 
 def create_data_on_directory(directory):
     # Получение списка файлов Comtrade из директории
-    files = [f for f in os.listdir(directory) if f.endswith('.cfg')]
+    raw_filepath = directory + "\\raw"
+    interim_filepath = directory + "\\interim"
+    
+    files = [f for f in os.listdir(raw_filepath) if f.endswith('.cfg')]
 
     # Инициализация общего датафрейма
     columns_name = ['filename',
@@ -26,7 +31,7 @@ def create_data_on_directory(directory):
         # Загрузка файла Comtrade
         rec = Comtrade()
         rec.load(os.path.join(
-            directory, file[:-4] + '.cfg'), os.path.join(directory, file[:-4] + '.dat'), encoding='utf-8')
+            raw_filepath, file[:-4] + '.cfg'), os.path.join(raw_filepath, file[:-4] + '.dat'), encoding='utf-8')
 
         # FIXME: оформить в нормальный список / массив
         current_phase_a = np.zeros(rec.total_samples)
@@ -97,7 +102,7 @@ def create_data_on_directory(directory):
             df = pd.concat([df, df_local], ignore_index=True)
 
     # Сохранение данных в файл .csv через pandas
-    df.to_csv(os.path.join(directory, 'data.csv'))
+    df.to_csv(os.path.join(interim_filepath, 'data.csv'))
 
     return df
 
@@ -137,4 +142,4 @@ def get_channel_index_by_name(string_list, name):
     return -1
 
 
-create_data_on_directory(test_directory)
+create_data_on_directory(filepath)

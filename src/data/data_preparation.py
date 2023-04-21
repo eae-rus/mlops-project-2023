@@ -2,7 +2,9 @@ import os
 import numpy as np
 import pandas as pd
 
-test_directory = 'test_data'
+filepath = os.path.abspath("..\..\data")
+interim_filepath = filepath + "\\interim"
+
 # FIXME: очень вероятно, стоит уменьшить числов гармоник до примерно 5
 HARMONIC_NUMBER = 6 # изначально была половина спектра 32/2=16, согласно достаточности выборок
 
@@ -53,6 +55,6 @@ def data_preparation_fft(df):
     return new_df
 
 
-df = pd.read_csv(f'{test_directory}/data.csv')
+df = pd.read_csv(f'{interim_filepath}/data.csv')
 fft_df_value = data_preparation_fft(df)
-fft_df_value.to_csv(os.path.join(test_directory, 'data_fft_value.csv'))
+fft_df_value.to_csv(os.path.join(interim_filepath, 'data_fft_value.csv'))
