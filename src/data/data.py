@@ -1,14 +1,17 @@
 import os
 import numpy as np
+import pandas as pd
 from comtrade import Comtrade
 
 test_directory = 'test_data'
+
 
 def create_data_on_directory(directory):
     # Получение списка файлов Comtrade из директории
     files = [f for f in os.listdir(directory) if f.endswith('.cfg')]
 
     # Инициализация списков для хранения данных
+    x_train_voltage_phase_a = []
     x_train_voltage_phase_a = []
     x_train_voltage_phase_b = []
     x_train_voltage_phase_c = []
@@ -22,23 +25,22 @@ def create_data_on_directory(directory):
         # Загрузка файла Comtrade
         rec = Comtrade()
         rec.load(os.path.join(
-            directory, file[:-4] + '.cfg'), os.path.join(directory, file[:-4] + '.dat'))
+            directory, file[:-4] + '.cfg'), os.path.join(directory, file[:-4] + '.dat'), encoding='utf-8')
 
         # Извлечение данных о напряжении и токе
-        current_phase_a = normalize_data(rec.analog[0])
-        # Значений тока фазы B нет на данных сигналах, поэтому зануляем
-        current_phase_b = np.zeros(rec.total_samples)
-        current_phase_c = normalize_data(rec.analog[1])
-        voltage_phase_a = normalize_data(rec.analog[2])
-        voltage_phase_b = normalize_data(rec.analog[3])
-        voltage_phase_c = normalize_data(rec.analog[4])
+        current_phase_a = get_analog_signal_by_name(rec, "IA 1ВВ", False)
+        current_phase_b = get_analog_signal_by_name(rec, "IB 1ВВ", False)
+        current_phase_c = get_analog_signal_by_name(rec, "IC 1ВВ", False)
+        voltage_phase_a = get_analog_signal_by_name(rec, "UA1СШ", False)
+        voltage_phase_b = get_analog_signal_by_name(rec, "UB1СШ", False)
+        voltage_phase_c = get_analog_signal_by_name(rec, "UC1СШ", False)
 
-        #ml_signal_2_1_1 = get_digital_signal_by_name(rec, "MLsignal_2_1_1")
+        # ml_signal_2_1_1 = get_digital_signal_by_name(rec, "MLsignal_2_1_1")
         ml_signal_1_1 = get_digital_signal_by_name(rec, "MLsignal_1_1")
-        #ml_signal_1_2 = get_digital_signal_by_name(rec, "MLsignal_1_2")
-        #ml_signal_2_1_3 = get_digital_signal_by_name(rec, "MLsignal_2_1_3")
-        #ml_signal_3 = get_digital_signal_by_name(rec, "MLsignal_3")
-        #start_osc = get_digital_signal_by_name(rec, "Пуск осциллографа")
+        # ml_signal_1_2 = get_digital_signal_by_name(rec, "MLsignal_1_2")
+        # ml_signal_2_1_3 = get_digital_signal_by_name(rec, "MLsignal_2_1_3")
+        # ml_signal_3 = get_digital_signal_by_name(rec, "MLsignal_3")
+        start_osc = get_digital_signal_by_name(rec, "Пуск осциллографа")
 
         # Выбор канала для обучения
         train_channel = ml_signal_1_1
@@ -49,7 +51,7 @@ def create_data_on_directory(directory):
             train_channel = np.zeros(rec.total_samples)
 
         # Преобразование данных в формат, который можно использовать для обучения
-        for i in range(len(current_phase_a)):
+        for i in range(rec.total_samples):
             x_train_voltage_phase_a.append([current_phase_a[i]])
             x_train_voltage_phase_b.append([current_phase_b[i]])
             x_train_voltage_phase_c.append([current_phase_c[i]])
@@ -66,6 +68,10 @@ def create_data_on_directory(directory):
             x_train_current_phase_b,
             x_train_current_phase_c,
             x_train_channel]
+
+    # Сохранение данных в файл .csv через pandas
+    data = pd.DataFrame(data)
+    data.to_csv(os.path.join(directory, 'data.csv'))
 
     return data
 
@@ -86,19 +92,19 @@ def get_digital_signal_by_name(rec, name):
     if index != -1:
         return rec.digital[index]
     else:
-        return []
+        return np.zeros(rec.total_samples)
 
 
 def get_analog_signal_by_name(rec, name, normalize=True):
     index = get_channel_index_by_name(rec.analog_channel_ids, name)
     if index != -1:
-        data = rec.analog[index]
+        data = np.array(rec.analog[index])
         if (normalize):
             return normalize_data(data)
         else:
             return data
     else:
-        return []
+        return np.zeros(rec.total_samples)
 
 
 def get_channel_index_by_name(string_list, name):
