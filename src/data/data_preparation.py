@@ -3,7 +3,8 @@ import numpy as np
 import pandas as pd
 
 test_directory = 'test_data'
-HARMONIC_NUMBER = 16 # половина спектра согласно достаточности выборок
+# FIXME: очень вероятно, стоит уменьшить числов гармоник до примерно 5
+HARMONIC_NUMBER = 6 # изначально была половина спектра 32/2=16, согласно достаточности выборок
 
 analog_signal_name = ['current_phase_a', 'current_phase_c',
                       'voltage_phase_a', 'voltage_phase_b', 'voltage_phase_c', 'voltage_3U0']
@@ -22,25 +23,31 @@ def data_preparation_fft(df):
         for harmonic in range(HARMONIC_NUMBER):
             fft_analog_signal_name.append(f'{signal_name}_h{harmonic}')
 
-    first_row = np.zeros((31, len(fft_analog_signal_name)))        
-    new_df = pd.DataFrame(first_row, columns=fft_analog_signal_name)
+    # создаём новый пустой массив требуемой размерности для ускорения расчёта
+    # first_row = np.zeros((length_df, len(fft_analog_signal_name)), dtype=float)      
+    first_row = np.full((length_df, len(fft_analog_signal_name)), np.nan, dtype=np.float32)
+    new_df = pd.DataFrame(first_row, columns=fft_analog_signal_name, dtype=np.float32)
     
     fft_coefficient = np.sqrt(2) / 32
     
-    # FIXME: считает ОЧЕНЬ не рационально, требуется оптимизировать
-    for i in range(32,length_df):
-        f_amp_row = np.zeros(0)
-        if ((df['filename'][i-32] == df['filename'][i]) and
-            (df['bus'][i-32] == df['bus'][i])):
+    window = df[analog_signal_name].rolling(window=32)
+    for i, win_data in enumerate(window):
+        if i < 32:
+            continue
+        f_amp_row = np.zeros(0, dtype=np.float32)
+        if      ((df['filename'][i-32] == df['filename'][i]) and
+                 (df['bus'][i-32] == df['bus'][i])):
             for analog_name in analog_signal_name:
-                x = df[i-32:i][analog_name]
-                f_amp = np.abs(np.fft.fft(x)[0:HARMONIC_NUMBER])*fft_coefficient # пока решено использовать только амплитуды, в будущем, будут комплексные числа
-                f_amp_row = np.concatenate((f_amp_row, f_amp), axis=0)
+                # FIXME: вероятно добавить принудительное зануление (присвоение NaN) сигналам ниже какого-то порога
+                # для того чтобы удалить "шумы" и уменьшить вес файлов.
+                x = win_data[analog_name]
+                f_amp = np.abs(np.fft.fft(x)[0:HARMONIC_NUMBER])*fft_coefficient
+                f_amp_row = np.concatenate((f_amp_row, f_amp), dtype=np.float32, axis=0)
         else:
-            f_amp_row = np.zeros(len(fft_analog_signal_name))
+            f_amp_row = np.zeros(len(fft_analog_signal_name), dtype=np.float32)
         new_row = dict(zip(fft_analog_signal_name, f_amp_row))
-        new_df = new_df.append(new_row, ignore_index=True)
-        # if i % 10000 == 0: # проверка на скорость
+        new_df.loc[i] = new_row
+        # if i % 10000 == 0: # проверка на скорость, ориентировочно 9с на 10к точек
         #     print(i)
     
     return new_df
