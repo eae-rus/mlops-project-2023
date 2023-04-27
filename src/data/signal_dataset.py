@@ -1,12 +1,5 @@
-import os
 import numpy as np
 import pandas as pd
-from comtrade import Comtrade
-import typing as tp
-
-# filepath = os.path.abspath("..\..\data")
-
-from urllib.parse import ParseResult
 
 
 class SignalDataset:
@@ -17,17 +10,17 @@ class SignalDataset:
         self.analog_signals = [f'UA{bus}СШ', f'UB{bus}СШ', f'UC{bus}СШ', f'UC{bus}СШ']
         self.analog_signals_names = ['voltage_phase_a', 'voltage_phase_b', 'voltage_phase_c', 'voltage_3U0']
         self.digital_signals = [f'MLsignal_{bus}_1', f'MLsignal_{bus}_1_1', f'MLsignal_{bus}_1_2', f'MLsignal_{bus}_2',
-                                f'MLsignal_{bus}_2_1', f'MLsignal_{bus}_2_1_1', \
+                                f'MLsignal_{bus}_2_1', f'MLsignal_{bus}_2_1_1',
                                 f'MLsignal_{bus}_2_1_2', f'MLsignal_{bus}_2_1_3', f'MLsignal_{bus}_3',
                                 f'MLsignal_{bus}_3_1', f'MLsignal_{bus}_3_2']
         self.digital_signals_add = ['MLsignal_12_1', 'MLsignal_12_1_1', 'MLsignal_12_1_2', 'MLsignal_12_2',
-                                    'MLsignal_12_2_1', 'MLsignal_12_2_1_1', 'MLsignal_12_2_1_2', \
+                                    'MLsignal_12_2_1', 'MLsignal_12_2_1_1', 'MLsignal_12_2_1_2',
                                     'MLsignal_12_2_1_3', 'MLsignal_12_3', 'MLsignal_12_3_1', 'MLsignal_12_3_2']
         self.digital_signals_names = ['ml_signal_1', 'ml_signal_1_1', 'ml_signal_1_2', 'ml_signal_2', 'ml_signal_2_1',
-                                      'ml_signal_2_1_1', 'ml_signal_2_1_2', \
+                                      'ml_signal_2_1_1', 'ml_signal_2_1_2',
                                       'ml_signal_2_1_3', 'ml_signal_3', 'ml_signal_3_1', 'ml_signal_3_2']
 
-    def get_features(self):
+    def get_features(self) -> pd.DataFrame:
         dataset = pd.DataFrame()
 
         analog_features = self.make_analog_features(self.rec, self.analog_signals_names, self.analog_signals)
@@ -49,7 +42,7 @@ class SignalDataset:
     def make_analog_features(self, rec, analog_signals_names, analog_signals) -> dict:
         analog_features = dict()
         analog_features['current_phase_a'] = self.get_analog_signal_by_name(rec, f"IA {self.bus}ВВ", True, 5,
-                                                                            name_two=f"IA{self.bus}")  # FIXME: исправить для любых названий
+                                                                            name_two=f"IA{self.bus}")      # FIXME: исправить для любых названий
         analog_features['current_phase_c'] = self.get_analog_signal_by_name(rec, f"IC {self.bus}ВВ", True, 5,
                                                                             name_two=f"IC{self.bus}")
         for i in range(len(analog_signals_names)):
@@ -59,16 +52,15 @@ class SignalDataset:
     def make_digital_features(self, rec, digital_signals_names, digital_signals, digital_signals_add) -> dict:
         digital_features = dict()
         for i in range(len(digital_signals_names)):
-            # print(digital_signals_names[i])
             digital_features[digital_signals_names[i]] = self.get_digital_signal_by_name(rec, digital_signals[i],
                                                                                          digital_signals_add[i])
         return digital_features
 
-    def normalize_data(self, data, normalize_level=100):
+    def normalize_data(self, data, normalize_level=100) -> np.ndarray:
         # FIXME: normalize_level заменить на нормальный список типов (ток=5/напряжение=100)
         return np.array(data/normalize_level)
 
-    def get_digital_signal_by_name(self, rec, name, name_two=''):
+    def get_digital_signal_by_name(self, rec, name, name_two='') -> np.ndarray:
         index = self.get_channel_index_by_name(rec.status_channel_ids, name)
         if index == -1:  # FIXME: временный костыль для добавления сигналов межсекционных (12)
 
@@ -78,7 +70,7 @@ class SignalDataset:
         else:
             return np.zeros(rec.total_samples)
 
-    def get_analog_signal_by_name(self, rec, name, is_normalize=True, normalize_level=100, name_two=None):
+    def get_analog_signal_by_name(self, rec, name, is_normalize=True, normalize_level=100, name_two=None) -> np.ndarray:
         index = self.get_channel_index_by_name(rec.analog_channel_ids, name)
         if index == -1:  # FIXME: временный костыль (кривые данные...)
             index = self.get_channel_index_by_name(rec.analog_channel_ids, name_two)
@@ -91,10 +83,7 @@ class SignalDataset:
         else:
             return np.zeros(rec.total_samples)
 
-    def get_channel_index_by_name(self, string_list, name):
+    def get_channel_index_by_name(self, string_list, name) -> int:
         if name in string_list:
             return string_list.index(name)
         return -1
-
-
-
