@@ -1,9 +1,13 @@
 import numpy as np
 import pandas as pd
+from comtrade import Comtrade
 
 
 class SignalDataset:
-    def __init__(self, filename, bus, rec) -> None:
+    """
+
+    """
+    def __init__(self, filename: str, bus: int, rec: Comtrade) -> None:
         self.filename = filename
         self.bus = bus
         self.rec = rec
@@ -21,6 +25,9 @@ class SignalDataset:
                                       'ml_signal_2_1_3', 'ml_signal_3', 'ml_signal_3_1', 'ml_signal_3_2']
 
     def get_features(self) -> pd.DataFrame:
+        """
+
+        """
         dataset = pd.DataFrame()
 
         analog_features = self.make_analog_features(self.rec, self.analog_signals_names, self.analog_signals)
@@ -39,28 +46,42 @@ class SignalDataset:
 
         return dataset
 
-    def make_analog_features(self, rec, analog_signals_names, analog_signals) -> dict:
+    def make_analog_features(self, rec: Comtrade, analog_signals_names: list, analog_signals: list) -> dict:
+        """
+
+        """
         analog_features = dict()
+        # FIXME: исправить для любых названий
         analog_features['current_phase_a'] = self.get_analog_signal_by_name(rec, f"IA {self.bus}ВВ", True, 5,
-                                                                            name_two=f"IA{self.bus}")      # FIXME: исправить для любых названий
+                                                                            name_two=f"IA{self.bus}")
         analog_features['current_phase_c'] = self.get_analog_signal_by_name(rec, f"IC {self.bus}ВВ", True, 5,
                                                                             name_two=f"IC{self.bus}")
         for i in range(len(analog_signals_names)):
             analog_features[analog_signals_names[i]] = self.get_analog_signal_by_name(rec, analog_signals[i], True, 100)
         return analog_features
 
-    def make_digital_features(self, rec, digital_signals_names, digital_signals, digital_signals_add) -> dict:
+    def make_digital_features(self, rec: Comtrade, digital_signals_names: list,
+                              digital_signals: list, digital_signals_add: list) -> dict:
+        """
+
+        """
         digital_features = dict()
         for i in range(len(digital_signals_names)):
             digital_features[digital_signals_names[i]] = self.get_digital_signal_by_name(rec, digital_signals[i],
                                                                                          digital_signals_add[i])
         return digital_features
 
-    def normalize_data(self, data, normalize_level=100) -> np.ndarray:
+    def normalize_data(self, data: np.ndarray, normalize_level=100) -> np.ndarray:
+        """
+
+        """
         # FIXME: normalize_level заменить на нормальный список типов (ток=5/напряжение=100)
         return np.array(data/normalize_level)
 
-    def get_digital_signal_by_name(self, rec, name, name_two='') -> np.ndarray:
+    def get_digital_signal_by_name(self, rec: Comtrade, name: str, name_two='') -> np.ndarray:
+        """
+
+        """
         index = self.get_channel_index_by_name(rec.status_channel_ids, name)
         if index == -1:  # FIXME: временный костыль для добавления сигналов межсекционных (12)
 
@@ -70,7 +91,11 @@ class SignalDataset:
         else:
             return np.zeros(rec.total_samples)
 
-    def get_analog_signal_by_name(self, rec, name, is_normalize=True, normalize_level=100, name_two=None) -> np.ndarray:
+    def get_analog_signal_by_name(self, rec: Comtrade, name: str,
+                                  is_normalize=True, normalize_level=100, name_two=None) -> np.ndarray:
+        """
+
+        """
         index = self.get_channel_index_by_name(rec.analog_channel_ids, name)
         if index == -1:  # FIXME: временный костыль (кривые данные...)
             index = self.get_channel_index_by_name(rec.analog_channel_ids, name_two)
@@ -83,7 +108,10 @@ class SignalDataset:
         else:
             return np.zeros(rec.total_samples)
 
-    def get_channel_index_by_name(self, string_list, name) -> int:
+    def get_channel_index_by_name(self, string_list: list, name: str) -> int:
+        """
+
+        """
         if name in string_list:
             return string_list.index(name)
         return -1
