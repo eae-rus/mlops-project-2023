@@ -28,12 +28,12 @@ build-job:
     script:
         - echo "Installing packages..."
 #        - pip install -r requirements.txt
-        - pip install flake8
 
 lintest:
     stage: test
     script:
         - echo "Starting lintests..."
+        - pip install flake8
         - flake8 --max-line-length=120 --ignore=E128 src/data/signal_dataset.py
         - flake8 --max-line-length=120 --ignore=E128 src/data/run.py
 
