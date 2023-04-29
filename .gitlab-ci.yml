@@ -27,11 +27,14 @@ build-job:
     stage: build
     script:
         - echo "Installing packages..."
+        - pip install -r requirements.txt
 
 lintest:
     stage: test
     script:
         - echo "Starting lintests..."
         - pip install flake8
-        - flake8 src
+#        - flake8 src
+        - flake8 run.py
+        - flake8 signal_dataset.py
 
