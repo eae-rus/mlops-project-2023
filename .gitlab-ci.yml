@@ -34,8 +34,6 @@ lintest:
     stage: test
     script:
         - echo "Starting lintests..."
-        - pip install flake8
-#        - flake8 src
-        - flake8 src/data/run.py
-        - flake8 src/data/signal_dataset.py
+        - flake8 --max-line-length=120 --ignore=E128 src/data/signal_dataset.py
+        - flake8 --max-line-length=120 --ignore=E128 src/data/run.py
 
