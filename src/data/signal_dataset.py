@@ -64,7 +64,7 @@ class SignalDataset:
 
     def normalize_data(self, data: np.ndarray, normalize_level=100) -> np.ndarray:
         # FIXME: normalize_level заменить на нормальный список типов (ток=5/напряжение=100)
-        return np.array(data/normalize_level)
+        return np.array(data / normalize_level)
 
     def get_digital_signal_by_name(self, rec: Comtrade, name: str, name_two='') -> np.ndarray:
         index = self.get_channel_index_by_name(rec.status_channel_ids, name)

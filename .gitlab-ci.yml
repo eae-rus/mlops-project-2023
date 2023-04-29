@@ -36,6 +36,6 @@ lintest:
         - echo "Starting lintests..."
         - pip install flake8
 #        - flake8 src
-        - flake8 run.py
-        - flake8 signal_dataset.py
+        - flake8 src/data/run.py
+        - flake8 src/data/signal_dataset.py
 
