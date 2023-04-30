@@ -30,7 +30,7 @@ def run():
             dataset_maker = SignalDataset(file, i, rec)
             features = dataset_maker.get_features()
             dataset = pd.concat([dataset, features])
-    dataset.to_csv(args.folder_from + '/data.csv')
+    dataset.to_csv(args.folder_to + '/data.csv')
 
 
 if __name__ == "__main__":
