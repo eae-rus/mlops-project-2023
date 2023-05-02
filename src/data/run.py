@@ -13,9 +13,6 @@ def parse_args():
                         help='data folder')
     parser.add_argument('folder_to', metavar='FOLDER_TO', type=str,
                         help='dataset folder')
-    # parser.add_argument('key', metavar='KEY', type=str,
-    #                     help='dataset folder')
-
     return parser.parse_args()
 
 
@@ -26,13 +23,14 @@ def run():
 
     for file in files:
         rec = Comtrade()
-        rec.load(os.path.join(args.folder_from, file + '.cfg'), os.path.join(args.folder_from, file + '.dat'),
+        rec.load(os.path.join(args.folder_from, file + '.cfg'),
+                 os.path.join(args.folder_from, file + '.dat'),
                  encoding='utf-8')
         for i in [1, 2]:
             dataset_maker = SignalDataset(file, i, rec)
             features = dataset_maker.get_features()
             dataset = pd.concat([dataset, features])
-    dataset.to_csv(args.folder_from+'/data.csv')
+    dataset.to_csv(args.folder_to + '/data.csv')
 
 
 if __name__ == "__main__":
