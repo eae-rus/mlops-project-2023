@@ -4,7 +4,7 @@ import os
 from comtrade import Comtrade
 # import typing as tp
 from signal_dataset import SignalDataset
-from data_preparation import FeatureMaker
+from dataset_maker import FeatureMaker
 
 
 def parse_args():
@@ -34,11 +34,10 @@ def run():
             features = dataset_maker.get_features()
             dataset = pd.concat([dataset, features])
     dataset.to_csv(args.folder_to + '/data.csv')
-
     if args.flag:
         feature_maker = FeatureMaker(dataset)
         fft_df_value = feature_maker.data_preparation_fft()
-        fft_df_value.to_csv(args.folder_to + 'data_fft_value.csv')
+        fft_df_value.to_csv(args.folder_to + '/data_fft_value.csv')
 
 
 if __name__ == "__main__":

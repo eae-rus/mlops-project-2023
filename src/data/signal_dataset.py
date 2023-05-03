@@ -71,7 +71,8 @@ class SignalDataset:
                     features[signals_names[i]] = self.get_analog_signal_by_name(rec, signals[i], True, 100,
                                                                                 name_two=signals_add[i])
             except Exception as e:
-                print("Неизвестное название аналогового сигнала. Пожалуйста, скорректируйте список типов.")
+                # print("Неизвестное название аналогового сигнала. Пожалуйста, скорректируйте список типов.")
+                print(e)
                 # TODO: в будущем появятся In с номиналом 1А, и Пояса Роговского (скорее всего 0,1В)
         return features
 

@@ -1,31 +1,23 @@
-import os
 import numpy as np
 import pandas as pd
 
 
 class FeatureMaker:
 
-    def __init__(self, dataset):
+    def __init__(self, dataset: pd.DataFrame) -> None:
         self.dataset = dataset
         self.harmonic_number = 6
         self.analog_signal_name = ['current_phase_a', 'current_phase_c',
                                    'voltage_phase_a', 'voltage_phase_b', 'voltage_phase_c', 'voltage_3U0']
 
-    # filepath = os.path.abspath("..\..\data")
-    # interim_filepath = filepath + "\\interim"
-    #
     # # FIXME: очень вероятно, стоит уменьшить числов гармоник до примерно 5
-    # HARMONIC_NUMBER = 6 # изначально была половина спектра 32/2=16, согласно достаточности выборок
 
-    # analog_signal_name = ['current_phase_a', 'current_phase_c',
-    #                       'voltage_phase_a', 'voltage_phase_b', 'voltage_phase_c', 'voltage_3U0']
-
-    def data_preparation_fft(self):
-        '''
+    def data_preparation_fft(self) -> pd.DataFrame:
+        """
         Первичный спектральный анализ производится с окном равным периоду (32 выборки)
         На первичном этапе решено не извлекать частоты ниже 50Гц (промышленная частота),
         и 50Гц будет считаться первой.
-        '''
+        """
         length_df = self.dataset.shape[0]
 
         fft_analog_signal_name = []
@@ -45,16 +37,19 @@ class FeatureMaker:
             if i < 32:
                 continue
             f_amp_row = np.zeros(0, dtype=np.float32)
-            if ((self.dataset['filename'][i - 32] == self.dataset['filename'][i]) and
-                    (self.dataset['bus'][i - 32] == self.dataset['bus'][i])):
+            # hostelCandidates1.equals(hostelCandidates2)
+            # print(self.dataset['filename'][i - 32])
+            # print(self.dataset['filename'][i])
+            if self.dataset['filename'].values[i - 32] == self.dataset['filename'].values[i] and\
+                    self.dataset['bus'].values[i - 32] == self.dataset['bus'].values[i]:
                 for analog_name in self.analog_signal_name:
                     # FIXME: вероятно добавить принудительное зануление (присвоение NaN) сигналам ниже какого-то порога
                     # для того чтобы удалить "шумы" и уменьшить вес файлов.
                     x = win_data[analog_name]
                     f_amp = np.abs(np.fft.fft(x)[0:self.harmonic_number]) * fft_coefficient
-                    f_amp_row = np.concatenate((f_amp_row, f_amp), dtype=np.float32, axis=0)
+                    f_amp_row = np.concatenate((f_amp_row, f_amp), axis=0)
             else:
-                f_amp_row = np.zeros(len(fft_analog_signal_name), dtype=np.float32)
+                f_amp_row = np.zeros(len(fft_analog_signal_name))
             new_row = dict(zip(fft_analog_signal_name, f_amp_row))
             new_df.loc[i] = new_row
 
