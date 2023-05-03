@@ -26,8 +26,8 @@ def run():
         rec.load(os.path.join(args.folder_from, file + '.cfg'),
                  os.path.join(args.folder_from, file + '.dat'),
                  encoding='utf-8')
-        for i in [1, 2]:
-            dataset_maker = SignalDataset(file, i, rec)
+        for bus in [1, 2]:
+            dataset_maker = SignalDataset(file, bus, rec)
             features = dataset_maker.get_features()
             dataset = pd.concat([dataset, features])
     dataset.to_csv(args.folder_to + '/data.csv')
