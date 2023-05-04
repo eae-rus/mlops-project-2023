@@ -63,14 +63,16 @@ class SignalDataset:
         features = dict()
         # FIXME: исправить для любых названий, а не только "второго"
         for i in range(len(signals_names)):
-            if 'current_phase' in signals_names[i]:
-                features[signals_names[i]] = self.get_analog_signal_by_name(rec, signals[i], True, 5,
-                                                                            name_two=signals_add[i])
-            elif 'voltage' in signals_names[i]:
-                features[signals_names[i]] = self.get_analog_signal_by_name(rec, signals[i], True, 100,
-                                                                            name_two=signals_add[i])
-            else:
-                print("Неизвестное название аналогового сигнала. Пожалуйста, скорректируйте список типов.")
+            try:
+                if 'current_phase' in signals_names[i]:
+                    features[signals_names[i]] = self.get_analog_signal_by_name(rec, signals[i], True, 5,
+                                                                                name_two=signals_add[i])
+                elif 'voltage' in signals_names[i]:
+                    features[signals_names[i]] = self.get_analog_signal_by_name(rec, signals[i], True, 100,
+                                                                                name_two=signals_add[i])
+            except Exception as e:
+                # print("Неизвестное название аналогового сигнала. Пожалуйста, скорректируйте список типов.")
+                print(e)
                 # TODO: в будущем появятся In с номиналом 1А, и Пояса Роговского (скорее всего 0,1В)
         return features
 
@@ -125,15 +127,15 @@ class SignalDataset:
                 is_use_for_ml[int(middle - expansion_zone): int(middle + expansion_zone)] = 1
             else:  # для слишком маленьких осциллограмм
                 is_use_for_ml[:] = 1
-        else:  # в осциллограмме есть интересные событий
-            # левая гарница
+        else:  # в осциллограмме есть интересные события
+            # левая граница
             for i in range(1, len_signal):
                 if (is_use_for_ml[i - 1] == 0) and (is_use_for_ml[i] == 1):
                     left_border = int(i - expansion_zone)
                     if left_border < 0:
                         left_border = 0
                     is_use_for_ml[left_border:i] = 1
-            # правая гарница
+            # правая граница
             for i in range(len_signal - 1, 0, -1):
                 if (is_use_for_ml[i] == 0) and (is_use_for_ml[i - 1] == 1):
                     right_border = int(i + expansion_zone)
