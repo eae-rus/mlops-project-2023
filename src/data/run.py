@@ -33,11 +33,11 @@ def run():
             dataset_maker = SignalDataset(file, bus, rec)
             features = dataset_maker.get_features()
             dataset = pd.concat([dataset, features])
-    dataset.to_csv(args.folder_to + '/data.csv')
+    dataset.to_csv(args.folder_to + '/data.csv', index=False)
     if args.flag:
         feature_maker = FeatureMaker(dataset)
         fft_df_value = feature_maker.data_preparation_fft()
-        fft_df_value.to_csv(args.folder_to + '/data_fft_value.csv')
+        fft_df_value.to_csv(args.folder_to + '/data_fft_value.csv', index=False)
 
 
 if __name__ == "__main__":
