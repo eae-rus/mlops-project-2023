@@ -115,7 +115,7 @@ class SignalDataset:
         return -1
 
     def expand_useful_areas(self, is_use_for_ml: np.array, expansion_zone: int) -> np.ndarray:
-        # FIXME: Сделать функцию более оптимальной по вычислительной нагрузке
+        # TODO: Сделать функцию более оптимальной по вычислительной нагрузке
         len_signal = len(is_use_for_ml)
 
         if is_use_for_ml.sum() == 0:  # в осциллограмме нет интересных событий
@@ -129,8 +129,7 @@ class SignalDataset:
             for i in range(1, len_signal):
                 if (is_use_for_ml[i - 1] == 0) and (is_use_for_ml[i] == 1):
                     left_border = int(i - expansion_zone)
-                    if left_border < 0:
-                        left_border = 0
+                    left_border = max(left_border, 0)
                     is_use_for_ml[left_border:i] = 1
             # правая граница
             for i in range(len_signal - 1, 0, -1):

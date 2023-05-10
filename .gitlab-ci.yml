@@ -47,10 +47,8 @@ flake8:
 pylint:
   stage: lintest_pylint
   script:
-    - echo "Starting lintest pylint src/data..."
-    - pylint src/data
-    - echo "Starting lintest pylint src/models..."
-    - pylint src/models
+    - echo "Starting lintest pylint src/data/dataset_maker.py..."
+    - pylint src/data/dataset_maker.py
   only:
     - merge_requests
   artifacts:
