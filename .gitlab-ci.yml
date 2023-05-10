@@ -1,39 +1,68 @@
-# This file is a template, and might need editing before it works on your project.
-# To contribute improvements to CI/CD templates, please follow the Development guide at:
-# https://docs.gitlab.com/ee/development/cicd/templates.html
-# This specific template is located at:
-# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Python.gitlab-ci.yml
+image: python:3.6.4
 
-# Official language image. Look for the different tagged releases at:
-# https://hub.docker.com/r/library/python/tags/
-image: python:latest
+variables:
+  PIP_CACHE_DIR: "MLOps Project 2023/.cache/pip"
 
-# Change pip's cache directory to be inside the project directory since we can
-# only cache local items.
-
-# Pip's cache doesn't store the python packages
-# https://pip.pypa.io/en/stable/topics/caching/
-#
-# If you want to also cache the installed packages, you have to install
-# them in a virtualenv and cache it as well.
-stages:
-  - build
-  - test
+cache:
+  paths:
+    - .cache/pip
+    - venv/
 
 before_script:
   - python --version
+  - pip --version
+  - pip install virtualenv
+  - virtualenv venv
+  - source venv/bin/activate
 
-build-job:
-    stage: build
-    script:
-        - echo "Installing packages..."
-#        - pip install -r requirements.txt
+stages:
+  - build
+  - lintest_flake8
+  - lintest_pylint
+  - unittest
 
-lintest:
-    stage: test
-    script:
-        - echo "Starting lintests..."
-        - pip install flake8
-        - flake8 --max-line-length=120 --ignore=E128 src/data/signal_dataset.py
-        - flake8 --max-line-length=120 --ignore=E128 src/data/run.py
+build:
+  stage: build
+  script:
+    - pip install -r requirements.txt
+  only:
+    - merge_requests
+  artifacts:
+    paths:
+      - build/*
 
+flake8:
+  stage: lintest_flake8
+  script:
+    - echo "Starting lintest flake8 src/data..."
+    - flake8 --max-line-length=120 --ignore=E128 src/data
+    - echo "Starting lintest flake8 src/models..."
+    - flake8 --max-line-length=120 --ignore=E128 src/models
+  only:
+    - merge_requests
+  artifacts:
+    paths:
+      - lintest_flake8/*
+
+pylint:
+  stage: lintest_pylint
+  script:
+    - echo "Starting lintest pylint src/data..."
+    - pylint src/data
+    - echo "Starting lintest pylint src/models..."
+    - pylint src/models
+  only:
+    - merge_requests
+  artifacts:
+    paths:
+      - lintest_pylint/*
+
+unittest:
+  stage: unittest
+  script:
+    - python -m unittest src/unit_tests/signal_dataset.py
+  only:
+    - merge_requests
+  artifacts:
+    paths:
+      - unittest/*

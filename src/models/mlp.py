@@ -1,4 +1,3 @@
-import torch
 import torch.nn as nn
 
 
@@ -12,7 +11,7 @@ class MLP(nn.Module):
             nn.Linear(window_size, 1),
             nn.Sigmoid()
         )
-    
+
     def forward(self, x):
 
         return self.layers(x)

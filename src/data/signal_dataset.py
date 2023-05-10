@@ -60,27 +60,26 @@ class SignalDataset:
         return dataset
 
     def make_analog_features(self, rec: Comtrade, signals_names: list, signals: list, signals_add: list) -> dict:
-        features = dict()
+        features = {}
         # FIXME: исправить для любых названий, а не только "второго"
-        for i in range(len(signals_names)):
+        for i, signal_name in enumerate(signals_names):
             try:
-                if 'current_phase' in signals_names[i]:
-                    features[signals_names[i]] = self.get_analog_signal_by_name(rec, signals[i], True, 5,
-                                                                                name_two=signals_add[i])
-                elif 'voltage' in signals_names[i]:
-                    features[signals_names[i]] = self.get_analog_signal_by_name(rec, signals[i], True, 100,
-                                                                                name_two=signals_add[i])
+                if 'current_phase' in signal_name:
+                    features[signal_name] = self.get_analog_signal_by_name(rec, signals[i], True, 5,
+                                                                           name_two=signals_add[i])
+                elif 'voltage' in signal_name:
+                    features[signal_name] = self.get_analog_signal_by_name(rec, signals[i], True, 100,
+                                                                           name_two=signals_add[i])
             except Exception as e:
                 # print("Неизвестное название аналогового сигнала. Пожалуйста, скорректируйте список типов.")
                 print(e)
                 # TODO: в будущем появятся In с номиналом 1А, и Пояса Роговского (скорее всего 0,1В)
         return features
 
-    def make_digital_features(self, rec: Comtrade, signals_names: list,
-                              signals: list, signals_add: list) -> dict:
-        digital_features = dict()
-        for i in range(len(signals_names)):
-            digital_features[signals_names[i]] = self.get_digital_signal_by_name(rec, signals[i], signals_add[i])
+    def make_digital_features(self, rec: Comtrade, signals_names: list, signals: list, signals_add: list) -> dict:
+        digital_features = {}
+        for i, signal_name in enumerate(signals_names):
+            digital_features[signal_name] = self.get_digital_signal_by_name(rec, signals[i], signals_add[i])
         return digital_features
 
     def normalize_data(self, data: np.ndarray, normalize_level=100) -> np.ndarray:
@@ -94,8 +93,7 @@ class SignalDataset:
             index = self.get_channel_index_by_name(rec.status_channel_ids, name_two)
         if index != -1:
             return np.array(rec.status[index])
-        else:
-            return np.zeros(rec.total_samples)
+        return np.zeros(rec.total_samples)
 
     def get_analog_signal_by_name(self, rec: Comtrade, name: str,
                                   is_normalize=True, normalize_level=100,
@@ -109,8 +107,7 @@ class SignalDataset:
             if is_normalize:
                 return self.normalize_data(data, normalize_level)
             return data
-        else:
-            return np.zeros(rec.total_samples)
+        return np.zeros(rec.total_samples)
 
     def get_channel_index_by_name(self, string_list: list, name: str) -> int:
         if name in string_list:

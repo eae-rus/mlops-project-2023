@@ -1,5 +1,4 @@
-#Copyright (c) 2023 AIRI
-
+# Copyright (c) 2023 AIRI
 
 import pandas as pd
 import numpy as np
@@ -7,7 +6,7 @@ from tqdm import tqdm
 
 
 class OscillogramDataLoader():
-    def __init__(self, data: pd.DataFrame, window_size: int, step_size: int, 
+    def __init__(self, data: pd.DataFrame, window_size: int, step_size: int,
                  minibatch_training=False, batch_size=0, shuffle=False):
         assert batch_size if minibatch_training else True
         self.df = data[['current_phase_a', 'current_phase_c', 'voltage_phase_a',
@@ -18,9 +17,7 @@ class OscillogramDataLoader():
         assert self.step_size <= self.window_size
         sample_seq = []
         runs = self.labels.index.get_level_values(0).unique()
-        for run_id in tqdm(
-            runs, 
-            desc='Creating sequence of samples'):
+        for run_id in tqdm(runs, desc='Creating sequence of samples'):
             _idx = self.labels.index.get_locs([run_id])
             sample_seq.extend(
                 np.arange(_idx.min(), _idx.max() - self.window_size + 1, self.step_size)
@@ -28,14 +25,14 @@ class OscillogramDataLoader():
         self.sample_seq = np.random.permutation(sample_seq) if shuffle else np.array(sample_seq)
         n_samples = len(sample_seq)
         batch_seq = list(range(0, n_samples, batch_size)) if minibatch_training else [0]
-        if batch_seq[-1] < n_samples: 
+        if batch_seq[-1] < n_samples:
             batch_seq.append(n_samples)
         self.n_batches = len(batch_seq) - 1
         self.batch_seq = np.array(batch_seq)
-        
+
     def __len__(self):
         return self.n_batches
-    
+
     def __iter__(self):
         self.iter = 0
         return self
@@ -43,7 +40,7 @@ class OscillogramDataLoader():
     def __next__(self):
         if self.iter < self.n_batches:
             # preparing batch of labels
-            sample_ids = self.sample_seq[self.batch_seq[self.iter]:self.batch_seq[self.iter+1]]
+            sample_ids = self.sample_seq[self.batch_seq[self.iter]:self.batch_seq[self.iter + 1]]
             row_idx = np.tile(sample_ids[:, None], (1, self.window_size)) + np.arange(self.window_size)
             row_isna = np.isnan(self.labels.values[row_idx]).min(axis=1)
             labels_batch = np.zeros(row_isna.shape[0])

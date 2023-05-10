@@ -1,6 +1,6 @@
 import argparse
-import pandas as pd
 import os
+import pandas as pd
 from comtrade import Comtrade
 # import typing as tp
 from signal_dataset import SignalDataset

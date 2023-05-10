@@ -13,7 +13,7 @@ def train():
     df = pd.read_csv('data/interim/data.csv', index_col=['filename', 'Unnamed: 0'])
     train_df = df[df['bus'] == 1]
     test_df = df[df['bus'] == 2]
-    
+
     train_dl = OscillogramDataLoader(
         data=train_df,
         window_size=32,
@@ -22,7 +22,7 @@ def train():
         batch_size=256,
         shuffle=True
     )
-    
+
     test_dl = OscillogramDataLoader(
         data=test_df,
         window_size=32,
@@ -30,14 +30,14 @@ def train():
         minibatch_training=True,
         batch_size=256,
     )
-    
+
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model = MLP(32)
     model.to(device)
     optimizer = Adam(model.parameters())
     n_epochs = 10
     loss_func = nn.BCELoss()
-    
+
     print('\n Training:')
     model.train()
     for e in range(n_epochs):
@@ -69,7 +69,7 @@ def train():
     test_label = pd.concat(test_labels)
     score = f1_score(test_label, pred)
     print('f1_score: ', score)
-        
+
 
 if __name__ == "__main__":
     train()
