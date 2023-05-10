@@ -1,4 +1,4 @@
-image: python:3.6.4
+image: python:3.9.13
 
 variables:
   PIP_CACHE_DIR: "MLOps Project 2023/.cache/pip"

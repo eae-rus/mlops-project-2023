@@ -15,7 +15,7 @@ Project Organization
     │   ├── processed      <- The final, canonical data sets for modeling.
     │   └── raw            <- The original, immutable data dump.
     │
-    ├── docs               <- A default Sphinx project; see sphinx-doc.org for details
+    ├── docs               <- Project documentation
     │
     ├── models             <- Trained and serialized models, model predictions, or model summaries
     │
@@ -36,15 +36,21 @@ Project Organization
     │   ├── __init__.py    <- Makes src a Python module
     │   │
     │   ├── data           <- Scripts to download or generate data
-    │   │   └── make_dataset.py
+    │   │   ├── dataloader.py
+    │   │   ├── dataset_maker.py
+    │   │   ├── run.py
+    │   │   └── signal_dataset.py
     │   │
     │   ├── features       <- Scripts to turn raw data into features for modeling
     │   │   └── build_features.py
     │   │
     │   ├── models         <- Scripts to train models and then use trained models to make
     │   │   │                 predictions
-    │   │   ├── predict_model.py
-    │   │   └── train_model.py
+    │   │   ├── mlp.py
+    │   │   └── train.py
+    │   │
+    │   ├── unit_tests     <- Unit tests
+    │   │   └── signal_dataset.py
     │   │
     │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
     │       └── visualize.py
