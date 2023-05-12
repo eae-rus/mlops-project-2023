@@ -6,7 +6,7 @@ Oscillogram analysis by ML/DL algorithms
 ### Dataset preparation with CLI:
 
 ```
-python run.py <folder_from> <folder_to>
+python run.py <folder_from> <folder_to> <flag>
 ```
 
 Project Organization
