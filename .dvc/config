@@ -1,5 +1,5 @@
 [core]
     remote = myremote
 ['remote "myremote"']
-    url = s3://mystore/path
-    endpointurl = https://rawdata.storage.yandexcloud.net/
+    url = s3://data/raw
+    endpointurl = rawdata.storage.yandexcloud.net
