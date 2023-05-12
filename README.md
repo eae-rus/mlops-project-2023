@@ -3,6 +3,12 @@ MLOps Project 2023
 
 Oscillogram analysis by ML/DL algorithms
 
+### Dataset preparation with CLI:
+
+```
+python run.py <folder_from> <folder_to>
+```
+
 Project Organization
 ------------
 
