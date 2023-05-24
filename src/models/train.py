@@ -70,6 +70,8 @@ def train():
     score = f1_score(test_label, pred)
     print('f1_score: ', score)
 
+    torch.save(model, 'models/model.pt')
+
 
 if __name__ == "__main__":
     train()
