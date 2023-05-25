@@ -1,3 +1,4 @@
+import mlflow
 import pandas as pd
 import torch
 import torch.nn as nn
@@ -7,7 +8,8 @@ from sklearn.metrics import f1_score
 from src.models.mlp import MLP
 from src.data.dataloader import OscillogramDataLoader
 
-
+mlflow.set_experiment("mlp")
+mlflow.pytorch.autolog()
 def train():
     # Data preparation for DataLoader:
     df = pd.read_csv('data/interim/data.csv', index_col=['filename', 'Unnamed: 0'])
