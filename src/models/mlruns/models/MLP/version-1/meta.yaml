@@ -1,0 +1,13 @@
+aliases: []
+creation_timestamp: 1685206465918
+current_stage: None
+description: ''
+last_updated_timestamp: 1685206465918
+name: MLP
+run_id: ca67db2ee89941cda07380c49b184de4
+run_link: ''
+source: mlflow-artifacts:/766730729203641436/ca67db2ee89941cda07380c49b184de4/artifacts/signals
+status: READY
+status_message: null
+user_id: null
+version: 1

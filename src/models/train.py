@@ -3,14 +3,18 @@ import torch
 import torch.nn as nn
 from torch.optim import Adam
 from sklearn.metrics import f1_score
+import mlflow
+from mlflow.models.signature import infer_signature
 
 from src.models.mlp import MLP
 from src.data.dataloader import OscillogramDataLoader
 
-
-def train():
+mlflow.set_tracking_uri("http://172.22.0.3:5000")  # need to change IP adress
+mlflow.set_experiment('mlp')
+mlflow.pytorch.autolog()
+with mlflow.start_run():
     # Data preparation for DataLoader:
-    df = pd.read_csv('data/interim/data.csv', index_col=['filename', 'Unnamed: 0'])
+    df = pd.read_csv('/home/apollo/projects/mlops-project-2023/data/interim/data.csv', index_col=['filename', 'Unnamed: 0'])
     train_df = df[df['bus'] == 1]
     test_df = df[df['bus'] == 2]
 
@@ -31,7 +35,8 @@ def train():
         batch_size=256,
     )
 
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cpu')
     model = MLP(32)
     model.to(device)
     optimizer = Adam(model.parameters())
@@ -39,6 +44,7 @@ def train():
     loss_func = nn.BCELoss()
 
     print('\n Training:')
+
     model.train()
     for e in range(n_epochs):
         av_loss = []
@@ -70,8 +76,13 @@ def train():
     score = f1_score(test_label, pred)
     print('f1_score: ', score)
 
-    torch.save(model, 'models/model.pt')
+    signature = infer_signature(test_df, pred)
+    mlflow.pytorch.log_model(model, "signals", signature=signature)
+
+    # autolog_run = mlflow.last_active_run()
+
+    # torch.save(model, 'models/model.pt')
 
 
-if __name__ == "__main__":
-    train()
+# if __name__ == "__main__":
+#     train()

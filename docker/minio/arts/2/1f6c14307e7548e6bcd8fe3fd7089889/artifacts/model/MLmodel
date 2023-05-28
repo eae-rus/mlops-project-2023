@@ -1,0 +1,24 @@
+artifact_path: model
+flavors:
+  lightgbm:
+    code: null
+    data: model.pkl
+    lgb_version: 3.3.5
+    model_class: lightgbm.sklearn.LGBMClassifier
+  python_function:
+    data: model.pkl
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.lightgbm
+    python_version: 3.9.5
+mlflow_version: 2.3.2
+model_uuid: 2feab208e31b425f80d49d0cb6fb6bb6
+run_id: 1f6c14307e7548e6bcd8fe3fd7089889
+signature:
+  inputs: '[{"name": "current_phase_a", "type": "double"}, {"name": "current_phase_c",
+    "type": "double"}, {"name": "voltage_phase_a", "type": "double"}, {"name": "voltage_phase_b",
+    "type": "double"}, {"name": "voltage_phase_c", "type": "double"}, {"name": "voltage_3U0",
+    "type": "double"}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "int64", "shape": [-1]}}]'
+utc_time_created: '2023-05-27 23:30:47.256621'
