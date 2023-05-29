@@ -1,0 +1,15 @@
+artifact_uri: mlflow-artifacts:/766730729203641436/955054ac54e94b2caa2f9a6f79f076ae/artifacts
+end_time: 1685204648414
+entry_point_name: ''
+experiment_id: '766730729203641436'
+lifecycle_stage: active
+run_id: 955054ac54e94b2caa2f9a6f79f076ae
+run_name: hilarious-roo-145
+run_uuid: 955054ac54e94b2caa2f9a6f79f076ae
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1685204617845
+status: 3
+tags: []
+user_id: apollo

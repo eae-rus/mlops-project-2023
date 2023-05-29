@@ -1,0 +1,15 @@
+artifact_uri: mlflow-artifacts:/766730729203641436/fd66e8b9e02141e28ae80dee6bc18a8d/artifacts
+end_time: 1685205027681
+entry_point_name: ''
+experiment_id: '766730729203641436'
+lifecycle_stage: active
+run_id: fd66e8b9e02141e28ae80dee6bc18a8d
+run_name: traveling-hen-562
+run_uuid: fd66e8b9e02141e28ae80dee6bc18a8d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1685204997818
+status: 3
+tags: []
+user_id: apollo

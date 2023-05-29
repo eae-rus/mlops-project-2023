@@ -1,0 +1,15 @@
+artifact_uri: mlflow-artifacts:/766730729203641436/ca67db2ee89941cda07380c49b184de4/artifacts
+end_time: 1685205348720
+entry_point_name: ''
+experiment_id: '766730729203641436'
+lifecycle_stage: active
+run_id: ca67db2ee89941cda07380c49b184de4
+run_name: stately-cow-639
+run_uuid: ca67db2ee89941cda07380c49b184de4
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1685205314045
+status: 3
+tags: []
+user_id: apollo
