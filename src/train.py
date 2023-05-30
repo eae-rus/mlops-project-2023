@@ -5,16 +5,18 @@ from torch.optim import Adam
 from sklearn.metrics import f1_score
 import mlflow
 from mlflow.models.signature import infer_signature
+from mlflow import log_metric
+import os
 
-from src.models.mlp import MLP
-from src.data.dataloader import OscillogramDataLoader
+from models import MLP
+from data import OscillogramDataLoader
 
-mlflow.set_tracking_uri("http://172.22.0.3:5000")  # need to change IP adress
+mlflow.set_tracking_uri("http://127.0.0.1:5000")  # need to change IP adress
 mlflow.set_experiment('mlp')
 mlflow.pytorch.autolog()
 with mlflow.start_run():
     # Data preparation for DataLoader:
-    df = pd.read_csv('/home/apollo/projects/mlops-project-2023/data/interim/data.csv', index_col=['filename', 'Unnamed: 0'])
+    df = pd.read_csv('data/interim/data.csv', index_col=['filename', 'Unnamed: 0'])
     train_df = df[df['bus'] == 1]
     test_df = df[df['bus'] == 2]
 
@@ -75,6 +77,7 @@ with mlflow.start_run():
     test_label = pd.concat(test_labels)
     score = f1_score(test_label, pred)
     print('f1_score: ', score)
+    log_metric("f1", score)
 
     signature = infer_signature(test_df, pred)
     mlflow.pytorch.log_model(model, "signals", signature=signature)
